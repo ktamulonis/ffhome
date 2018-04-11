@@ -1,6 +1,5 @@
 class LookupsController < ApplicationController
   before_action :set_lookup, only: [:show, :edit, :update, :destroy]
-
   # GET /lookups
   # GET /lookups.json
   def index
@@ -25,6 +24,8 @@ class LookupsController < ApplicationController
   # POST /lookups.json
   def create
     @lookup = Lookup.new(lookup_params)
+    @lookup.slug = @lookup.address.downcase.gsub(" ", "_")
+    @lookup.save
 
     respond_to do |format|
       if @lookup.save
@@ -64,11 +65,11 @@ class LookupsController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_lookup
-      @lookup = Lookup.find(params[:id])
+      @lookup = Lookup.find_by_slug(params[:id])
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def lookup_params
-      params.require(:lookup).permit(:address)
+      params.require(:lookup).permit(:address, :slug)
     end
 end
